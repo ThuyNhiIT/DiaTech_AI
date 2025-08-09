@@ -46,3 +46,21 @@ function addMessage(text, sender) {
     chatBox.appendChild(msgElem);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
+
+function clearMessage() {
+    // Xóa nội dung trong textarea
+    document.getElementById('message').value = '';
+}
+
+function resetForm() {
+    // Xóa tất cả các ô nhập liệu trong form dự đoán nguy cơ tiểu đường
+    document.getElementById('preg').value = '';
+    document.getElementById('glu').value = '';
+    document.getElementById('bp').value = '';
+    document.getElementById('skin').value = '';
+    document.getElementById('ins').value = '';
+    document.getElementById('bmi').value = '';
+    document.getElementById('dpf').value = '';
+    document.getElementById('age').value = '';
+}
