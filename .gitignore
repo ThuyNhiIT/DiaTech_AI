@@ -1,0 +1,16 @@
+# Bỏ qua thư mục node_modules
+node_modules/
+
+# Bỏ qua file log
+*.log
+
+# Bỏ qua file môi trường
+.env
+
+# Bỏ qua thư mục build/dist
+dist/
+build/
+
+# Bỏ qua file hệ thống
+.DS_Store
+Thumbs.db

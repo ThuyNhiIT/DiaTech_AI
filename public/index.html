@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Tiểu Đường</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="chat-container">
+        <h2>🤖 Chatbot Tư Vấn Tiểu Đường</h2>
+        <div id="chat-box"></div>
+
+        <div class="input-section">
+            <textarea id="message" placeholder="Nhập câu hỏi hoặc thông tin triệu chứng..."></textarea>
+            <button onclick="sendMessage()">Gửi</button>
+        </div>
+
+        <h3>📊 Dự đoán nguy cơ tiểu đường</h3>
+        <div class="form-section">
+            <label>Pregnancies: <input type="number" id="preg"></label>
+            <label>Glucose: <input type="number" id="glu"></label>
+            <label>Blood Pressure: <input type="number" id="bp"></label>
+            <label>Skin Thickness: <input type="number" id="skin"></label>
+            <label>Insulin: <input type="number" id="ins"></label>
+            <label>BMI: <input type="number" step="0.1" id="bmi"></label>
+            <label>Diabetes Pedigree Function: <input type="number" step="0.01" id="dpf"></label>
+            <label>Age: <input type="number" id="age"></label>
+            <button onclick="predictRisk()">Dự đoán</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
