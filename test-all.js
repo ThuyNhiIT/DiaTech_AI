@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 (async () => {
-    console.log("📂 Loading model...");
+    console.log("Loading model...");
 
     // Load model
     const modelPath = path.join(__dirname, 'model', 'model.json');
@@ -20,12 +20,12 @@ const path = require('path');
     };
 
     const model = await tf.loadLayersModel(ioHandler);
-    console.log("✅ Model loaded");
+    console.log("Model loaded");
 
     // Load minmax (để chuẩn hóa theo min max tập train)
     const minmaxPath = path.join(__dirname, 'model', 'minmax.json');
     if (!fs.existsSync(minmaxPath)) {
-        console.error("❌ File minmax.json chưa có. Hãy lưu mins, maxs khi train.");
+        console.error("File minmax.json chưa có. Hãy lưu mins, maxs khi train.");
         process.exit(1);
     }
     const { mins, maxs } = JSON.parse(fs.readFileSync(minmaxPath, 'utf8'));

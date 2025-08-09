@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 (async () => {
-    console.log("🚀 Training model...");
+    console.log("Training model...");
 
     // Đọc CSV
     const csvPath = path.join(__dirname, 'data', 'pima_diabetes.csv');
@@ -116,8 +116,8 @@ const path = require('path');
     // Lưu mins, maxs để chuẩn hóa khi test/predict
     fs.writeFileSync(path.join(savePath, 'minmax.json'), JSON.stringify({ mins, maxs }));
 
-    console.log('✅ Model saved to', savePath);
-    console.log('✅ Min-Max parameters saved to minmax.json');
+    console.log('Model saved to', savePath);
+    console.log('Min-Max parameters saved to minmax.json');
 
     // Đánh giá model trên test set (kiểm tra accuracy)
     const preds = model.predict(XtestTensor);
