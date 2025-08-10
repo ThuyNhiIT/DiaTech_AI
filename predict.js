@@ -3,17 +3,17 @@ const fs = require('fs');
 const path = require('path');
 
 (async () => {
-    console.log("Loading model and minmax parameters from local files...");
+    console.log("===== DEBUG PREDICT =====");
 
-    // Đọc model.json
+    // ==== 1. Load model từ file ====
     const modelPath = path.join(__dirname, 'model', 'model.json');
-    const modelJSON = JSON.parse(fs.readFileSync(modelPath, 'utf8'));
-
-    // Đọc weights.bin
     const weightsPath = path.join(__dirname, 'model', 'weights.bin');
+    const modelJSON = JSON.parse(fs.readFileSync(modelPath, 'utf8'));
     const weightData = fs.readFileSync(weightsPath);
 
-    // Tạo IOHandler thủ công
+    console.log("Model topology layers:", modelJSON.modelTopology.config.layers.length);
+    console.log("Weight specs count:", modelJSON.weightSpecs.length);
+
     const ioHandler = {
         load: async () => ({
             modelTopology: modelJSON.modelTopology,
@@ -21,57 +21,54 @@ const path = require('path');
             weightData: weightData
         })
     };
-
-    // Load model
     const model = await tf.loadLayersModel(ioHandler);
-    console.log("Model loaded successfully!");
+    console.log("✅ Model loaded.");
 
-    // Đọc minmax.json (lưu min và max từng cột để chuẩn hóa)
+    // ==== 2. Load normalization params ====
     const minmaxPath = path.join(__dirname, 'model', 'minmax.json');
-    const { mins, maxs } = JSON.parse(fs.readFileSync(minmaxPath, 'utf8'));
+    const { mins, maxs, medians } = JSON.parse(fs.readFileSync(minmaxPath, 'utf8'));
+    console.log("mins:", mins);
+    console.log("maxs:", maxs);
+    console.log("medians:", medians);
 
-    // Tính median cho các cột cần fix giá trị 0
-    // Ở đây giả sử median được tính trước và lưu hoặc tính trung bình min-max nếu chưa có
-    // Bạn có thể thay bằng median thật nếu tính được từ dữ liệu train
-    const medianCols = [1, 2, 3, 4, 5]; // các cột Glucose, BloodPressure, SkinThickness, Insulin, BMI
+    const medianCols = [1, 2, 3, 4, 5];
 
-    // Tính median tạm thời = trung bình (min+max)/2
-    const medians = mins.map((min, i) => (min + maxs[i]) / 2);
-
-    // Hàm fix zeros: nếu giá trị 0 ở cột đặc biệt thì thay bằng median tương ứng
-    function fixZeros(arr, cols, medians) {
-        cols.forEach(colIdx => {
-            if (arr[colIdx] === 0) {
-                arr[colIdx] = medians[colIdx];
+    function fixZeros(row) {
+        medianCols.forEach(colIdx => {
+            if (row[colIdx] === 0) {
+                row[colIdx] = medians[colIdx];
             }
         });
+        return row;
     }
 
-    // Hàm chuẩn hóa min-max cho một mẫu đơn
-    function minMaxNormalizeSingle(row, mins, maxs) {
+    function minMaxNormalizeSingle(row) {
         return row.map((v, i) => (v - mins[i]) / (maxs[i] - mins[i]));
     }
 
-    // Dữ liệu mẫu để dự đoán
+    // ==== 3. Input ban đầu ====
     let sampleInput = [7, 100, 0, 0, 0, 30, 0.484, 32];
+    console.log("\n[STEP 0] Raw input:", sampleInput);
 
-    // Fix zeros theo median
-    fixZeros(sampleInput, medianCols, medians);
+    // ==== 4. Fix zeros ====
+    let fixedInput = fixZeros([...sampleInput]);
+    console.log("[STEP 1] After fixZeros:", fixedInput);
 
-    // Chuẩn hóa min-max
-    const normalizedInput = minMaxNormalizeSingle(sampleInput, mins, maxs);
+    // ==== 5. Normalization ====
+    let normalizedInput = minMaxNormalizeSingle(fixedInput);
+    console.log("[STEP 2] After normalization:", normalizedInput);
 
-    // Tạo tensor đầu vào
-    const inputTensor = tf.tensor2d([normalizedInput], [1, 8]);
+    // ==== 6. Tensor conversion ====
+    const inputTensor = tf.tensor2d([normalizedInput], [1, 8], 'float32');
+    console.log("[STEP 3] Tensor data:", Array.from(inputTensor.dataSync()));
 
-    // Dự đoán
+    // ==== 7. Prediction ====
     const prediction = model.predict(inputTensor);
     const predictionValue = (await prediction.data())[0];
+    const percent = (predictionValue * 100).toFixed(6);
 
-    // Tính phần trăm
-    const percent = (predictionValue * 100).toFixed(2);
-
-    console.log(`Prediction (xác suất): ${predictionValue}`);
-    console.log(`Mức độ tiểu đường (phần trăm): ${percent}%`);
-    console.log(predictionValue > 0.5 ? "Có khả năng bị tiểu đường" : "Ít khả năng bị tiểu đường");
+    console.log("\n===== FINAL RESULT =====");
+    console.log("Probability:", predictionValue);
+    console.log("Risk %:", percent);
+    console.log(predictionValue > 0.5 ? "⚠️ Nguy cơ cao" : "✅ Nguy cơ thấp");
 })();
