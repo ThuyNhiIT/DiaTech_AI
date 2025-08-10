@@ -7,7 +7,11 @@ const OpenAI = require('openai');
 
 const app = express();
 app.use(express.json());
-app.use(express.static('public'));
+
+// TẠO ENDPOINT RIÊNG ĐỂ PHỤC VỤ CÁC TỆP TỪ THƯ MỤC MODEL
+app.use('/model', express.static(path.join(__dirname, 'model')));
+
+app.use(express.static('public')); // Dòng này cần đặt sau dòng trên để tránh xung đột
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -116,6 +120,7 @@ app.post('/predict', async (req, res) => {
 });
 
 // API: chat (RAG + ML optional)
+// API: chat (RAG + ML optional)
 app.post('/chat', async (req, res) => {
     try {
         const { message, features } = req.body;
@@ -167,6 +172,5 @@ app.post('/chat', async (req, res) => {
         res.status(500).json({ error: 'server error' });
     }
 });
-
 
 app.listen(3000, () => console.log('🚀 Server running on http://localhost:3000'));
