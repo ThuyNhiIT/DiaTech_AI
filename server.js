@@ -4,34 +4,45 @@ const tf = require('@tensorflow/tfjs');
 const fs = require('fs');
 const path = require('path');
 const OpenAI = require('openai');
-const { fixZeros, minMaxNormalizeSingle } = require('./preprocess');
 
 const app = express();
 app.use(express.json());
-
-// Serve thư mục model
 app.use('/model', express.static(path.join(__dirname, 'model')));
 app.use(express.static('public'));
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-let model = null;
+// Tham số chuẩn hóa
 let mins = [];
 let maxs = [];
 let medians = [];
 const medianCols = [1, 2, 3, 4, 5];
 
+let model = null;
+
+function fixZeros(row) {
+    medianCols.forEach(colIdx => {
+        if (row[colIdx] === 0) {
+            row[colIdx] = medians[colIdx];
+        }
+    });
+    return row;
+}
+
+function minMaxNormalizeSingle(row) {
+    return row.map((v, i) => (v - mins[i]) / (maxs[i] - mins[i]));
+}
+
 async function loadModelAndParams() {
     console.log("Đang load model và tham số normalization...");
 
-    // Ép cùng backend CPU để tính giống nhau
     await tf.setBackend('cpu');
     await tf.ready();
 
-    // Load model từ HTTP
+    // Load model qua HTTP (bắt buộc)
     model = await tf.loadLayersModel('http://localhost:3000/model/model.json');
 
-    // Load normalization params
+    // Load minmax.json từ file hệ thống
     const minmaxPath = path.join(__dirname, 'model', 'minmax.json');
     const minmaxData = JSON.parse(fs.readFileSync(minmaxPath, 'utf8'));
     mins = minmaxData.mins;
@@ -41,7 +52,6 @@ async function loadModelAndParams() {
     console.log("✅ Model và tham số đã sẵn sàng!");
 }
 
-// API Predict
 app.post('/predict', async (req, res) => {
     try {
         const { features } = req.body;
@@ -49,18 +59,16 @@ app.post('/predict', async (req, res) => {
             return res.status(400).json({ error: 'features phải là mảng 8 số' });
         }
 
-        let input = fixZeros(features.map(Number), medianCols, medians);
-        input = minMaxNormalizeSingle(input, mins, maxs);
+        let input = fixZeros([...features]);
+        input = minMaxNormalizeSingle(input);
 
-        const inputTensor = tf.tensor2d([input], [1, 8]);
-        const prob = (await model.predict(inputTensor).data())[0];
-        const label = prob > 0.5 ? '⚠️ Nguy cơ cao' : '✅ Nguy cơ thấp';
+        const inputTensor = tf.tensor2d([input], [1, 8], 'float32');
+        const predictionTensor = model.predict(inputTensor);
+        const predictionValue = (await predictionTensor.data())[0];
+        const percent = (predictionValue * 100).toFixed(2);
+        const label = predictionValue > 0.5 ? '⚠️ Nguy cơ cao' : '✅ Nguy cơ thấp';
 
-        res.json({
-            probability: prob,
-            percent: (prob * 100).toFixed(2),
-            label
-        });
+        res.json({ probability: predictionValue, percent, label });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Lỗi server khi dự đoán' });
@@ -118,8 +126,6 @@ app.post('/chat', async (req, res) => {
         res.status(500).json({ error: 'server error' });
     }
 });
-
-
 (async () => {
     app.listen(3000, async () => {
         console.log('🚀 Server chạy tại http://localhost:3000');
