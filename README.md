@@ -1,14 +1,15 @@
 ﻿# DiaTech_AI
 
 CREATE BY: NHI-PTT
-# Train RAG
+## Train RAG
 node rag-setup.js   
 
-# Train model
+## Train model
 > node train-model.js
 
-# Demo input
+## Demo input
 node predict.js
 
-# Start server 
+## Start server 
 node server.js
+
