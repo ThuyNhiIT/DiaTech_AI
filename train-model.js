@@ -16,20 +16,31 @@ const path = require('path');
     let X = data.map(d => d.slice(0, 8));
     const y = data.map(d => d[8]);
 
-    // Hàm xử lý giá trị 0 không hợp lệ bằng median của cột
-    function fixZeros(arr, cols) {
+    // Hàm lấy giá trị median cho các cột có giá trị 0
+    function getMedians(arr, cols) {
+        const medians = [];
         cols.forEach(colIdx => {
             const nonZeroVals = arr.filter(r => r[colIdx] !== 0).map(r => r[colIdx]);
             nonZeroVals.sort((a, b) => a - b);
             const mid = Math.floor(nonZeroVals.length / 2);
-            const median = nonZeroVals.length % 2 !== 0 ?
+            medians[colIdx] = nonZeroVals.length % 2 !== 0 ?
                 nonZeroVals[mid] : (nonZeroVals[mid - 1] + nonZeroVals[mid]) / 2;
-            arr.forEach(r => {
-                if (r[colIdx] === 0) r[colIdx] = median;
-            });
         });
+        return medians;
     }
-    fixZeros(X, [1, 2, 3, 4, 5]); // Glucose, BloodPressure, SkinThickness, Insulin, BMI
+
+    const medianCols = [1, 2, 3, 4, 5];
+    // Tính median trước khi xử lý dữ liệu
+    const medians = getMedians(X, medianCols);
+
+    // Xử lý giá trị 0 không hợp lệ bằng median của cột
+    X.forEach(row => {
+        medianCols.forEach(colIdx => {
+            if (row[colIdx] === 0) {
+                row[colIdx] = medians[colIdx];
+            }
+        });
+    });
 
     // Hàm chuẩn hóa Min-Max trả về cả mins, maxs
     function minMaxNormalize(arr) {
@@ -47,7 +58,8 @@ const path = require('path');
     const { normalized, mins, maxs } = minMaxNormalize(X);
     X = normalized;
 
-    // Tách train-test 80-20, shuffle
+    // ... (Phần code tách train-test, xây dựng và huấn luyện model giữ nguyên) ...
+
     const combined = X.map((x, i) => ({ x, y: y[i] }));
     tf.util.shuffle(combined);
 
@@ -60,13 +72,11 @@ const path = require('path');
     const Xtest = testData.map(d => d.x);
     const ytest = testData.map(d => d.y);
 
-    // Tensor
     const XtrainTensor = tf.tensor2d(Xtrain);
     const ytrainTensor = tf.tensor2d(ytrain, [ytrain.length, 1]);
     const XtestTensor = tf.tensor2d(Xtest);
     const ytestTensor = tf.tensor2d(ytest, [ytest.length, 1]);
 
-    // Model
     const model = tf.sequential();
     model.add(tf.layers.dense({ inputShape: [8], units: 32, activation: 'relu' }));
     model.add(tf.layers.dropout({ rate: 0.2 }));
@@ -80,7 +90,6 @@ const path = require('path');
         metrics: ['accuracy'],
     });
 
-    // Train
     await model.fit(XtrainTensor, ytrainTensor, {
         epochs: 100,
         batchSize: 32,
@@ -113,11 +122,10 @@ const path = require('path');
         };
     }));
 
-    // Lưu mins, maxs để chuẩn hóa khi test/predict
-    fs.writeFileSync(path.join(savePath, 'minmax.json'), JSON.stringify({ mins, maxs }));
-
+    // LƯU CẢ MINS, MAXS VÀ MEDIANS
+    fs.writeFileSync(path.join(savePath, 'minmax.json'), JSON.stringify({ mins, maxs, medians }));
     console.log('Model saved to', savePath);
-    console.log('Min-Max parameters saved to minmax.json');
+    console.log('Min-Max and Median parameters saved to minmax.json');
 
     // Đánh giá model trên test set (kiểm tra accuracy)
     const preds = model.predict(XtestTensor);
@@ -128,5 +136,4 @@ const path = require('path');
         if (predLabel === ytest[i]) correct++;
     }
     console.log(`Test set accuracy: ${(correct / ytest.length * 100).toFixed(2)}%`);
-
 })();
