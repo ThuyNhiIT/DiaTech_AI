@@ -1,3 +1,4 @@
+
 # Thông tin về Bệnh Tiểu Đường (Diabetes Mellitus)
 
 ## 1. Khái niệm
@@ -7,6 +8,8 @@ Có ba loại chính:
 - **Tiểu đường type 1**: Hệ miễn dịch tấn công và phá hủy các tế bào sản xuất insulin.
 - **Tiểu đường type 2**: Cơ thể kháng insulin hoặc không sản xuất đủ insulin.
 - **Tiểu đường thai kỳ**: Xảy ra trong thời kỳ mang thai.
+
+(Nguồn: Bộ Y tế Việt Nam - https://moh.gov.vn/chuong-trinh-muc-tieu-quoc-gia/-/asset_publisher/7ng11fEWgASC/content/nguyen-nhan-va-bieu-hien-benh-ai-thao-uong-o-nguoi-gia)
 
 ---
 
@@ -21,6 +24,8 @@ Các triệu chứng phổ biến:
 - Chậm lành vết thương
 - Nhiễm trùng tái phát (da, nướu, đường tiết niệu)
 
+(Nguồn: Bộ Y tế Việt Nam)
+
 ---
 
 ## 3. Nguyên nhân
@@ -29,6 +34,8 @@ Các triệu chứng phổ biến:
 - Lối sống ít vận động
 - Chế độ ăn nhiều đường và chất béo bão hòa
 - Căng thẳng kéo dài
+
+(Nguồn: Bộ Y tế Việt Nam)
 
 ---
 
@@ -39,18 +46,24 @@ Các triệu chứng phổ biến:
 - Huyết áp cao
 - Cholesterol bất thường
 - Tiền sử tiểu đường thai kỳ
+- Ít vận động, hút thuốc lá
+- Vòng eo lớn (nam > 90 cm, nữ > 80 cm)
+
+(Nguồn: https://moh.gov.vn/chuong-trinh-muc-tieu-quoc-gia/-/asset_publisher/7ng11fEWgASC/content/benh-tieu-uong-tip-2-yeu-to-nguy-co-mac)
 
 ---
 
 ## 5. Biến chứng
 Nếu không kiểm soát tốt, tiểu đường có thể gây:
-- Bệnh tim mạch
+- Bệnh tim mạch (52–80% tử vong ở người tiểu đường do biến chứng tim mạch)
 - Đột quỵ
 - Bệnh thận mạn
 - Tổn thương mắt (bệnh võng mạc)
 - Tổn thương thần kinh (neuropathy)
 - Nhiễm trùng chân dẫn đến cắt cụt chi
 - Các vấn đề về răng miệng
+
+(Nguồn: https://moh.gov.vn/tin-tong-hop/-/asset_publisher/k206Q9qkZOqn/content/bien-chung-tim-mach-do-benh-ai-thao-uong-va-cach-phong-ngua)
 
 ---
 
@@ -60,6 +73,10 @@ Nếu không kiểm soát tốt, tiểu đường có thể gây:
 - Duy trì cân nặng hợp lý
 - Kiểm tra sức khỏe định kỳ
 - Kiểm soát huyết áp và cholesterol
+- Hạn chế nước ngọt, đồ chiên rán
+- Ngủ đủ giấc
+
+(Nguồn: Bộ Y tế Việt Nam)
 
 ---
 
@@ -70,6 +87,8 @@ Nếu không kiểm soát tốt, tiểu đường có thể gây:
 - Tập thể dục nhẹ nhàng và đều đặn
 - Khám bác sĩ định kỳ để kiểm tra biến chứng
 
+(Nguồn: Bộ Y tế Việt Nam)
+
 ---
 
-⚠️ **Lưu ý**: Mọi thông tin trên chỉ mang tính tham khảo và không thay thế cho lời khuyên y tế từ bác sĩ.
+⚠️ **Lưu ý**: Mọi thông tin trên được tổng hợp và xác thực từ Bộ Y tế Việt Nam, chỉ mang tính tham khảo và không thay thế cho lời khuyên y tế từ bác sĩ.
